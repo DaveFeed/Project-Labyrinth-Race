@@ -1,6 +1,10 @@
-#include <iostream>
+#pragma once
+#include "Game.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	Game game;
+	game.start();
+	
+	return 0;
 }
