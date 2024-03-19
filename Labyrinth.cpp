@@ -11,7 +11,7 @@ height(height)
 
 void Labyrinth::init()
 {
-    std::stack<std::pair<int, int>> st;                                  //for dfs
+    std::stack<std::pair<int, int>> st;             //for dfs
     std::vector<char> used(height * width, false);
 
     int x = (rand() % width);                       //where to start dfs
@@ -92,25 +92,36 @@ void Labyrinth::init()
 
 void Labyrinth::draw()
 {
+    //draws upper line(just maze walls)
     std::cout << ' ';
     for(int i = 1; i < 2 * width; ++i)
         std::cout << '_';
     std::cout << std::endl;
 
+    //draws the maze itself. made its sizex2, on even places are rooms, on odd places are walls
+    //i shows the rows
     for(int i = 0; i < 2 * height - 1; ++i) {
+        //maze wall
         std::cout << '|';
+
+        //j shows the columns
         for(int j = 0; j < 2 * width - 1; ++j) {
-            if(j % 2 != 0) {
-                if(i % 2 != 0)
+            if(j % 2 != 0) {                //checks if we are on the odd column, there are 2 options:
+                                            //either wall intersection, or check if left and right rooms have corridor
+
+                if(i % 2 != 0)              //we are on odd x odd place, it means intersection of walls
                     std::cout << '+';
+
                 else {
-                    if((labyrinth[j / 2][i / 2] & RIGHT_PATH) == 0)
+                    if((labyrinth[j / 2][i / 2] & RIGHT_PATH) == 0)     //check if left room has path to the left
                         std::cout << '|';
                     else
                         std::cout << ' ';
                 }
+
             }
-            else {
+            else {                          //we are on even column, 2 options:
+                                            //either room, or check if upper and bottom rooms have corridor
                 if(i % 2 == 0)
                     std::cout << ' ';
                 else {
@@ -121,9 +132,12 @@ void Labyrinth::draw()
                 }
             }
         }
+
+        //maze wall
         std::cout << '|' << std::endl;
     }
 
+    //draws the bottom line(just maze walls)
     std::cout << ' ';
     for(int i = 1; i < 2 * width; ++i)
         std::cout << '-';
