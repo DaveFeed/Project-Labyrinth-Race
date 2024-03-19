@@ -5,13 +5,16 @@
 #include "UI.h"
 #include "Player.h"
 
-Game::Game() {
+Game::Game() 
+:player()
+,labyrinth(5, 5)
+,ui()
+{
 	difficulty = Rookie;
-	player = Player();
-	labyrinth = Labyrinth();
-	ui = UI();
 }
 
 void Game::start() {
+	labyrinth.init();
+	labyrinth.draw();
 	std::cout << "Successfully started the game!" << std::endl;
 }
