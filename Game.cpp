@@ -7,7 +7,7 @@
 
 Game::Game() 
 :player()
-,labyrinth(5, 5)
+,labyrinth(20, 20)
 ,ui()
 {
 	difficulty = Rookie;

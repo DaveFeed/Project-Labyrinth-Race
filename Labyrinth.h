@@ -21,9 +21,9 @@ private:
 
     // '|' and '&' bitwise operators will be used to check if vertex has pathes(0101 - has north and east paths)
     enum {
-        UP_PATH = 1,
-        BOTTOM_PATH = 2,
-        RIGHT_PATH = 4,
-        LEFT_PATH = 8,
+        UP_PATH = 0b0001,
+        BOTTOM_PATH = 0b0010,
+        RIGHT_PATH = 0b0100,
+        LEFT_PATH = 0b1000,
     };
 };
