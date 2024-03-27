@@ -1,29 +1,37 @@
-#pragma once
+﻿#pragma once
 #include <vector>
-#include <cstdlib> //for rand(), srand()
-#include <ctime>   //for time() to use srand(time(NULL))
-#include <stack>   //std::stack for dfs in labyrinth construcing
 #include <iostream>
 
 class Labyrinth
 {
 public:
-    //A constructor that sets height and width of maze(default is 20x20)
-    Labyrinth (unsigned height = 20, unsigned width = 20);
+	Labyrinth(unsigned height = 20, unsigned width = 20);
 
-    void init();
-    void draw();
+	enum TILE_TYPES : char {
+		EMPTY = 0,
+		WALL = 1,
+		PLAYER = 2,
+		BOT = 3,
+		FIRE = 4
+	};
 
+	void init();
+	void checkAvailable(int x, int y);
+	void update(); // todo::
+
+	// todo:: (refactor) bad practice
+	std::vector<std::vector<int>> data;
 private:
-    unsigned height;
-    unsigned width;
-    std::vector<std::vector<int>> labyrinth;
+	unsigned height;
+	unsigned width;
 
-    // '|' and '&' bitwise operators will be used to check if vertex has pathes(0101 - has north and east paths)
-    enum {
-        UP_PATH = 0b0001,
-        BOTTOM_PATH = 0b0010,
-        RIGHT_PATH = 0b0100,
-        LEFT_PATH = 0b1000,
-    };
+	// todo:: (remove)
+	enum PATHS {
+		UP = 0b0001,
+		DOWN = 0b0010,
+		RIGHT = 0b0100,
+		LEFT = 0b1000,
+	};
 };
+
+

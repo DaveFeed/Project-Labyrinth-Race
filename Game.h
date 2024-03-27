@@ -7,13 +7,23 @@ class Game
 {
 public:
 	Game();
+	enum DIFFICULTY { Rookie, Easy, Medium, Hard };
+
+	void init();
+	void loop();
+	void play();
+
 	void start();
 
+	int handleMenuInputs(int choices, int currentPosition);
 private:
-	enum Difficulty { Rookie, Easy, Medium, Hard };
 	UI ui;
 	Labyrinth labyrinth;
 	Player player;
-	Difficulty difficulty;
+	DIFFICULTY difficulty;
+
+	UI::MENU_STATES menuState; 
+	UI::KEYS lastKey;
+	bool startGame;
 };
 
