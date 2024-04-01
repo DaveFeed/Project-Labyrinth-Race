@@ -56,7 +56,7 @@ public:
 	void drawCursor(int currentPosition);
 	void clearCursor(int currentPosition);
 	void hideCursor();
-	void labyrinth(const std::vector<std::vector<char>>* labyrinth);
+	void labyrinth(std::vector<std::vector<int>>* labyrinth);
 
 	KEYS awaitKeypress();
 	

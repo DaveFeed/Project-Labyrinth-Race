@@ -12,26 +12,27 @@ public:
 		WALL = 1,
 		PLAYER = 2,
 		BOT = 3,
-		FIRE = 4
+		FIRE = 4,
+		EXIT = 5
 	};
 
 	void init();
 	void checkAvailable(int x, int y);
 	void update(); // todo::
+	void createWeightMap();
 
 	// todo:: (refactor) bad practice
-	std::vector<std::vector<int>> data;
+	std::vector<std::vector<int>> labyrinth;
+	std::vector<std::vector<int>> weightMap;
+	std::vector<std::pair<int,int>> exits;
 private:
 	unsigned height;
 	unsigned width;
 
-	// todo:: (remove)
-	enum PATHS {
-		UP = 0b0001,
-		DOWN = 0b0010,
-		RIGHT = 0b0100,
-		LEFT = 0b1000,
-	};
+	void addPaths();
+	void addLoops(unsigned short count);
+	void addExits(unsigned short count);
+	std::vector<std::vector<int>> bfs(std::pair<int,int> startPoint);
 };
 
 

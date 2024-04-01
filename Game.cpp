@@ -1,4 +1,7 @@
 ﻿#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
@@ -14,6 +17,7 @@ Game::Game()
 	, ui()
 {
 
+	srand(time(NULL));
 	// todo:: (maybe) Move these to Game::init() ?
 	difficulty = DIFFICULTY::Rookie;
 	menuState = UI::MENU_STATES::DEFAULT;
@@ -21,8 +25,9 @@ Game::Game()
 }
 
 void Game::init() {
-	ui.init();
 	labyrinth.init();
+
+	// ui.init();
 }
 
 void Game::play() {
@@ -43,6 +48,10 @@ void Game::loop() {
 void Game::start() {
 	init();
 
+	labyrinth.createWeightMap();
+	return ;
+
+	
 	int choices = 0;
 	int currentPosition = 0;
 	do {
@@ -57,7 +66,7 @@ void Game::start() {
 	// spawn fire according to difficulty
 	ui.clear();
 	// todo:: (i cant be bothered rn) i want to sleep 04:21
-	// ui.labyrinth(labyrinth.data);
+	ui.labyrinth(&(labyrinth.labyrinth));
 	loop();
 }
 
