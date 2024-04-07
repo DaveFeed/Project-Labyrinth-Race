@@ -15,15 +15,12 @@ public:
     void draw();
 
 private:
-    unsigned height;
-    unsigned width;
+    unsigned rooms_height;
+    unsigned rooms_width;
+    unsigned vec_height;
+    unsigned vec_width;
+    unsigned exits_count;
     std::vector<std::vector<int>> labyrinth;
-
-    // '|' and '&' bitwise operators will be used to check if vertex has pathes(0101 - has north and east paths)
-    enum {
-        UP_PATH = 0b0001,
-        BOTTOM_PATH = 0b0010,
-        RIGHT_PATH = 0b0100,
-        LEFT_PATH = 0b1000,
-    };
+    std::vector<std::vector<int>> weight_map;
+    std::vector<std::pair<int, int>> exits;
 };
