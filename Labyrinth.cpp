@@ -1,17 +1,16 @@
 #include "Labyrinth.h"
-#include <iostream>
 #include <stack>
 #include <queue>
 #include <cmath>
 
-Labyrinth::Labyrinth(unsigned height, unsigned width) :
+Labyrinth::Labyrinth(unsigned height, unsigned width, int exits_count) :
 	rooms_height(height)
 	, rooms_width(width)
 	, vec_height(rooms_height * 2 + 1)
 	, vec_width(rooms_width * 2 + 1)
 	, labyrinth(vec_width, std::vector<int>(vec_height, TILE_TYPES::WALL))
 	, weight_map(rooms_width, std::vector<int>(rooms_height, 1e6))
-	, exits_count(2)
+	, exits_count(exits_count)
 	, exits()
 {
 }
@@ -31,7 +30,6 @@ void Labyrinth::init()
 
 	std::stack<std::pair<int, int>> st;
 	int walls = (vec_height - 2) * (vec_width - 2) - (rooms_height - 1) * (rooms_width - 1) - 1;
-	int rooms = 1;
 
 	int x = (rand() % 2 * rooms_width);
 	if (x % 2 == 0) {
@@ -77,14 +75,12 @@ void Labyrinth::init()
 
 			labyrinth[(x + new_x) / 2][(y + new_y) / 2] = TILE_TYPES::EMPTY;
 			walls -= 2;
-			++rooms;
 			x = new_x;
 			y = new_y;
 			st.push(std::make_pair(x, y));
 		}
 		else {
 			st.pop();
-
 			if (!st.empty()) {
 				x = st.top().first;
 				y = st.top().second;
@@ -101,8 +97,8 @@ void Labyrinth::init()
 
 void Labyrinth::draw()
 {
-	for (int y = 0; y < vec_width; ++y) {
-		for (int x = 0; x < vec_height; ++x) {
+	for (int y = 0; y < vec_height; ++y) {
+		for (int x = 0; x < vec_width; ++x) {
 			switch (labyrinth[x][y])
 			{
 			case TILE_TYPES::EMPTY:
@@ -280,5 +276,41 @@ void Labyrinth::generateWeightMap()
 				weight_map[x][y] = std::min(weight_map[x][y], exitBfs[x][y]);
 			}
 		}
+	}
+}
+
+bool Labyrinth::is_wall(int x, int y) const {
+    return labyrinth[x][y] != TILE_TYPES::EMPTY;
+}
+
+bool Labyrinth::is_wall(std::pair<int, int> pos) const {
+    return labyrinth[pos.first][pos.second] != TILE_TYPES::EMPTY;
+}
+
+std::vector<std::vector<int>> Labyrinth::get_weight_map() const {
+	return weight_map;
+}
+
+int Labyrinth::get_min() {
+	return std::min(rooms_height, rooms_width);
+}
+
+int Labyrinth::get_max() {
+	for(int i = 0; i < rooms_width; ++i) {
+		for(int j = 0; j < rooms_height; ++j) {
+			if(max < weight_map[i][j]) {
+				max = weight_map[i][j];
+			}
+		}
+	}
+	return max;
+}
+
+void Labyrinth::draw_wm() {
+	for(int j = 0; j < rooms_height; ++j) {
+		for(int i = 0; i < rooms_width; ++i) {
+			std::cout << weight_map[i][j];
+		}
+		std::cout << std::endl;
 	}
 }
