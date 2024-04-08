@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 #include "Game.h"
 #include "Labyrinth.h"
@@ -10,7 +12,9 @@ Game::Game()
 ,labyrinth(20, 20)
 ,ui()
 {
-	difficulty = Rookie;
+	srand(time(NULL));
+
+	difficulty = DIFFICULTY::Rookie;
 }
 
 void Game::start() {

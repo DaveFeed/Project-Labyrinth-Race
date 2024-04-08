@@ -10,10 +10,10 @@ public:
 	void start();
 
 private:
-	enum Difficulty { Rookie, Easy, Medium, Hard };
+	enum class DIFFICULTY { Rookie, Easy, Medium, Hard };
 	UI ui;
 	Labyrinth labyrinth;
 	Player player;
-	Difficulty difficulty;
+	DIFFICULTY difficulty;
 };
 
