@@ -5,22 +5,30 @@
 class Labyrinth
 {
 public:
-    Labyrinth (unsigned height = 20, unsigned width = 20, int exits_count = 2);
+    Labyrinth(unsigned height = 20, unsigned width = 20, int exits_count = 2);
 
     void init();
     void draw();
     void draw_wm();
     bool is_wall(int x, int y) const;
     bool is_wall(std::pair<int, int> pos) const;
+    bool is_exit(int x, int y) const;
+    bool is_exit(std::pair<int, int> pos) const;
     std::vector<std::vector<int>> get_weight_map() const;
+    std::vector<std::pair<int, int>> get_exits() const;
     int get_min();
     int get_max();
 
+    // first argument is player, second is bot
+    std::vector<std::pair<int, int>> generate_positions();
+
+    std::pair<int, int> get_labyrinth_size() const;
+    
 private:
-    unsigned rooms_height;
-    unsigned rooms_width;
     unsigned vec_height;
     unsigned vec_width;
+    unsigned room_height;
+    unsigned room_width;
     unsigned exits_count;
 
     std::vector<std::vector<int>> labyrinth;

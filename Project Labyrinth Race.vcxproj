@@ -139,17 +139,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EasyBot.cpp" />
+    <ClCompile Include="Fire.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="HardBot.cpp" />
+    <ClCompile Include="Human.cpp" />
     <ClCompile Include="Labyrinth.cpp" />
+    <ClCompile Include="MediumBot.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Project Labyrinth Race.cpp" />
-    <ClCompile Include="UI.cpp" />
+    <ClCompile Include="RookieBot.cpp" />
+    <ClCompile Include="Helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EasyBot.h" />
+    <ClInclude Include="Fire.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="HardBot.h" />
+    <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Human.h" />
     <ClInclude Include="Labyrinth.h" />
+    <ClInclude Include="MediumBot.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="UI.h" />
+    <ClInclude Include="RookieBot.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

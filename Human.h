@@ -9,8 +9,7 @@ public:
     Human(int x, int y);
     ~Human();
 
-    bool move(const Labyrinth& labyrinth) override;
-    void draw();
+    void move(const Labyrinth& labyrinth) override;
 
 private:
     enum KEYS {
@@ -21,5 +20,5 @@ private:
         q = 113
     };
 
-    char key_pressed;
+    char key_pressed = 0;
 };

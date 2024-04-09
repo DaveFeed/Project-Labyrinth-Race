@@ -1,12 +1,13 @@
 #pragma once
 #include "Player.h"
 
-class RookieBot: public Player
+class EasyBot :
+    public Player
 {
 public:
-    RookieBot();
-    RookieBot(std::pair<int, int> pos);
-    RookieBot(int x, int y);
+    EasyBot();
+    EasyBot(std::pair<int, int> pos);
+    EasyBot(int x, int y);
 
     void move(const Labyrinth& labyrinth) override;
 

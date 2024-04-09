@@ -1,102 +1,87 @@
-#include "Human.h"
+#pragma once
 #include <iostream>
 #include <cstdlib>
 
-#ifdef WIN32
-#include <conio.h>
-//todo
-#else
-#include <termios.h>
-#include <unistd.h>
-
-//this function makes getc() work without expecting enter
-void nonblock(int state)
-{
-    struct termios ttystate;
-    tcgetattr(STDIN_FILENO, &ttystate);
-
-    if (state==0)
-    {
-        ttystate.c_lflag &= ~ICANON;
-        ttystate.c_cc[VMIN] = 1;
-    }
-    else if (state==1)
-    {
-        ttystate.c_lflag |= ICANON;
-    }
-    tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
-
-}
-int read_char() {
-    return getch
-}
-#endif
+#include "Human.h"
+#include "Helpers.h"
 
 Human::Human() {     //to avoid code duplication created default constructor, 
-    nonblock(0);        //but error occured(delegation with mem-initialization)
+    sprite = '$';
+    Helpers::nonblock(0);        //but error occured(delegation with mem-initialization)
+}
+
+Human::Human(std::pair<int, int> pos) : Player(pos) {
+    sprite = '$';
+    Helpers::nonblock(0);
+}
+
+Human::Human(int x, int y) : Player(std::make_pair(x, y)) {
+    sprite = '$';
+    Helpers::nonblock(0);
 }
 
 Human::~Human() {
-    nonblock(1);
+    Helpers::nonblock(1);
 }
 
-Human::Human(std::pair<int, int> pos): Player(pos) {
-    nonblock(0);
-}
-
-Human::Human(int x, int y):Player(std::make_pair(x, y)) {
-    nonblock(0);
-}
-
-std::pair<int, int> Player::get_pos() {
-    return pos;
-}
-
-bool Human::move(const Labyrinth& labyrinth) {
+void Human::move(const Labyrinth& labyrinth) {
     prev_pos = pos;
-    bool moved = false;
-    while(!moved) {
-        key_pressed = getchar();
+
+    do {
+        key_pressed = Helpers::read_char();
         std::cout << "\r \r";
         switch(key_pressed) {
             case KEYS::w:
                 if(!labyrinth.is_wall(pos.first, pos.second - 1)) {
                     pos.second -= 2;
-                    moved = true;
+                    return;
+                }
+
+                if (labyrinth.is_exit(pos.first, pos.second - 1)) {
+                    pos.second -= 1;
+                    return;
                 }
                 break;
 
             case KEYS::a:
                 if(!labyrinth.is_wall(pos.first - 1, pos.second)) {
                     pos.first -= 2;
-                    moved = true;
+                    return;
+                }
+
+                if (labyrinth.is_exit(pos.first - 1, pos.second)) {
+                    pos.first -= 1;
+                    return;
                 }
                 break;
 
             case KEYS::s:
                 if(!labyrinth.is_wall(pos.first, pos.second + 1)) {
                     pos.second += 2;
-                    moved = true;
+                    return;
+                }
+
+                if (labyrinth.is_exit(pos.first, pos.second + 1)) {
+                    pos.second += 1;
+                    return;
                 }
                 break;
 
             case KEYS::d:
                 if(!labyrinth.is_wall(pos.first + 1, pos.second)) {
                     pos.first += 2;
-                    moved = true;
+                    return;
+                }
+
+                if (labyrinth.is_exit(pos.first + 1, pos.second)) {
+                    pos.first += 1;
+                    return;
                 }
                 break;
             case KEYS::q:
-                return false;
+                exit(0);
             default:
                 break;
         }
-    }
-    return true;
-}
-
-void Human::draw() {
-    std::cout << "\x1B[" << pos.second + 1 << ";" << pos.first + 1 << "f";
-    std::cout << '$';
-    std::cout << "\x1B[" << 50 << ";" << 1 << "f";
+    } while (true);
 }

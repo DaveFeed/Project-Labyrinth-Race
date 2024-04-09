@@ -1,17 +1,19 @@
+#pragma once
 #include <iostream>
 #include <cstdlib>
 
-#include "RookieBot.h"
+#include "EasyBot.h"
+#include "Player.h"
 #include "Helpers.h"
 
-RookieBot::RookieBot() { sprite = 'R'; };
-RookieBot::RookieBot(std::pair<int, int> pos) : Player(pos) { sprite = 'R'; };
-RookieBot::RookieBot(int x, int y) : Player(x, y) { sprite = 'R'; };
+EasyBot::EasyBot() { sprite = 'E'; };
+EasyBot::EasyBot(std::pair<int, int> pos) : Player(pos) { sprite = 'E'; };
+EasyBot::EasyBot(int x, int y) : Player(x, y) { sprite = 'E'; };
 
-void RookieBot::move(const Labyrinth& labyrinth) {
+void EasyBot::move(const Labyrinth& labyrinth) {
 	prev_pos = pos;
 	if (is_dead) return;
-	
+
 	do {
 		direction = rand() % 4;
 		switch (direction) {

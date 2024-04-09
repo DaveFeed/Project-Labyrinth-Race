@@ -3,94 +3,116 @@
 #include <ctime>
 
 #include "Game.h"
+#include "Human.h"
+#include "Helpers.h"
+#include "RookieBot.h"
+#include "EasyBot.h"
+#include "MediumBot.h"
+#include "HardBot.h"
 
 Game::Game() 
-:labyrinth(6, 6, 2)
-,ui()
-,fire(1)
+:labyrinth(20,20,2),
+fire(2)
 {
 	srand(time(NULL));
-	difficulty = DIFFICULTY::Rookie;
-}
 
-std::pair<int, int> Game::find_position(int distance) {
-	auto weight_map = labyrinth.get_weight_map();
-	int x = rand() % weight_map.size();
-	int y = rand() % weight_map[0].size();
-	while(weight_map[x][y] != distance) {
-		int new_x = x, new_y = y;
-		if(x > 0) {
-			if(abs(weight_map[x - 1][y] - distance) < abs(weight_map[new_x][new_y] - distance)) {
-				new_x = x - 1;
-				new_y = y;
-			}
-		}
-		if(x < weight_map.size() - 1) {
-			if(abs(weight_map[x + 1][y] - distance) < abs(weight_map[new_x][new_y] - distance)) {
-				new_x = x + 1;
-				new_y = y;
-			}
-		}
-		if(y > 0) {
-			if(abs(weight_map[x][y - 1] - distance) < abs(weight_map[new_x][new_y] - distance)) {
-				new_x = x;
-				new_y = y - 1;
-			}
-		}
-		if(y < weight_map[0].size() - 1) {
-			if(abs(weight_map[x][y + 1] - distance) < abs(weight_map[new_x][new_y] - distance)) {
-				new_x = x;
-				new_y = y + 1;
-			}
-		}
-		if((x == new_x) && (y == new_y)) {
-			x = rand() % weight_map.size();
-			y = rand() % weight_map[0].size();
-		}
-		else {
-			x = new_x;
-			y = new_y;
-		}
-	}
-	x = 2 * x + 1;
-	y = 2 * y + 1;
-	return std::make_pair(x, y);
+	difficulty = DIFFICULTY::Rookie;
+	game_state = STATE::Playing;
 }
 
 void Game::start() {
+	Helpers::resizeConsole(80, 60);
 	labyrinth.init();
+	
+	auto positions = labyrinth.generate_positions();
 
-	int distance = rand() % (labyrinth.get_max() * 3 / 4);
-	while(distance <= (labyrinth.get_min() / 4)) {
-		distance += (labyrinth.get_min() / 4);
+	player = new Human(positions[0]);
+	
+	// todo:: (add) dynamic difficulty change, at least command args option
+	switch (difficulty)
+	{
+	case Game::DIFFICULTY::Rookie:
+		bot = new RookieBot(positions[1]);
+		break;
+	case Game::DIFFICULTY::Easy:
+		bot = new EasyBot(positions[1]);
+		break;
+	case Game::DIFFICULTY::Medium:
+		// bot = new MediumBot(positions[1]);
+		break;
+	case Game::DIFFICULTY::Hard:
+		// bot = new HardBot(positions[1]);
+		break;
+	default:
+		break;
 	}
-	player.set_pos(find_position(distance));
-	bot.set_pos(find_position(distance));
 
-	distance += (labyrinth.get_min() / 2);
-	fire.set_fire(find_position(distance));
+	fire.set_pos(positions[2], labyrinth);
 
 	labyrinth.draw();
-	player.draw();
-	bot.draw();
+
+	bot->draw();
+	player->draw();
 	fire.draw();
-	game_loop();
+
+	loop();
 }
 
-void Game::game_loop() {
-	while(true) {
-		if(!player.move(labyrinth)) {
-			break;
+
+void Game::loop() {
+	while(game_state == STATE::Playing) {
+		Helpers::hideCursor();
+		player->move(labyrinth);
+		bot->move(labyrinth);
+
+		fire.update(labyrinth);
+
+		player->clear_pos();
+		player->draw();
+		
+		game_state = check_game_state();
+		if (game_state == STATE::Won) {
+			// draw only the player and then show that he won
+			return;
 		}
-		bot.move(labyrinth);
-		fire.spread_fire(labyrinth);
 
-		player.clear_pos();
-		player.draw();
-
-		bot.clear_pos();
-		bot.draw();
+		bot->clear_pos();
+		bot->draw();
 
 		fire.draw();
 	}
+}
+
+Game::STATE Game::check_game_state() {
+	const std::pair<int, int> player_location = player->get_pos();
+	const std::pair<int, int> bot_location = bot->get_pos();
+
+	for (const auto& exit : labyrinth.get_exits())
+	{
+		if (player_location == exit) {
+			return STATE::Won;
+		}
+
+		if (bot_location == exit) {
+			return STATE::Lost;
+		}
+	}
+
+	for (const auto& f : fire.get_fire_pos())
+	{
+		if (player_location == f) {
+			return STATE::Lost;
+		}
+
+		if (bot_location == f) {
+			bot->kill();
+		}
+	}
+
+	return STATE::Playing;
+}
+
+Game::~Game() {
+	delete player;
+	delete bot;
 }

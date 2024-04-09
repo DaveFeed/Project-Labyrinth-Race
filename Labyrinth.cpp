@@ -1,15 +1,18 @@
-#include "Labyrinth.h"
 #include <stack>
 #include <queue>
 #include <cmath>
+#include <unordered_map>
+
+#include "Labyrinth.h"
+#include "Helpers.h"
 
 Labyrinth::Labyrinth(unsigned height, unsigned width, int exits_count) :
-	rooms_height(height)
-	, rooms_width(width)
-	, vec_height(rooms_height * 2 + 1)
-	, vec_width(rooms_width * 2 + 1)
+	room_height(height)
+	, room_width(width)
+	, vec_height(height * 2 + 1)
+	, vec_width(width * 2 + 1)
 	, labyrinth(vec_width, std::vector<int>(vec_height, TILE_TYPES::WALL))
-	, weight_map(rooms_width, std::vector<int>(rooms_height, 1e6))
+	, weight_map(room_width, std::vector<int>(room_height, 1e6))
 	, exits_count(exits_count)
 	, exits()
 {
@@ -29,14 +32,14 @@ void Labyrinth::init()
 	}
 
 	std::stack<std::pair<int, int>> st;
-	int walls = (vec_height - 2) * (vec_width - 2) - (rooms_height - 1) * (rooms_width - 1) - 1;
+	int walls = (vec_height - 2) * (vec_width - 2) - (room_height - 1) * (room_width - 1) - 1;
 
-	int x = (rand() % 2 * rooms_width);
+	int x = (rand() % 2 * room_width);
 	if (x % 2 == 0) {
 		++x;
 	}
 
-	int y = (rand() % 2 * rooms_height);
+	int y = (rand() % 2 * room_height);
 	if (y % 2 == 0) {
 		++y;
 	}
@@ -45,6 +48,7 @@ void Labyrinth::init()
 
 	while (!st.empty()) {
 		labyrinth[x][y] = 0;
+
 		std::vector<std::pair<int, int>> neighs;
 
 		if (x > 1) {
@@ -69,6 +73,7 @@ void Labyrinth::init()
 		}
 
 		if (!neighs.empty()) {
+
 			int neighbor = rand() % neighs.size();
 			int new_x = neighs[neighbor].first;
 			int new_y = neighs[neighbor].second;
@@ -218,8 +223,8 @@ void Labyrinth::addExits() {
 
 std::vector<std::vector<int>> Labyrinth::bfs(std::pair<int, int> exitPos)
 {
-	std::vector<std::vector<bool>> visited(rooms_width, std::vector<bool>(rooms_height, false));
-	std::vector<std::vector<int>> distances(rooms_width, std::vector<int>(rooms_height));
+	std::vector<std::vector<bool>> visited(room_width, std::vector<bool>(room_height, false));
+	std::vector<std::vector<int>> distances(room_width, std::vector<int>(room_height));
 
 	std::queue<std::pair<int, int>> q;
 
@@ -250,7 +255,7 @@ std::vector<std::vector<int>> Labyrinth::bfs(std::pair<int, int> exitPos)
 			int x = current.first + dir.first;
 			int y = current.second + dir.second;
 
-			if (x >= 0 && x < rooms_width && y >= 0 && y < rooms_height &&
+			if (x >= 0 && x < room_width && y >= 0 && y < room_height &&
 				!visited[x][y] && labyrinth[current.first * 2 + 1 + dir.first][current.second * 2 + 1 + dir.second] == TILE_TYPES::EMPTY)
 			{
 				visited[x][y] = true;
@@ -269,9 +274,9 @@ void Labyrinth::generateWeightMap()
 	{
 		const auto exitBfs = bfs(exit);
 
-		for (int x = 0; x < rooms_width; ++x)
+		for (unsigned x = 0; x < room_width; ++x)
 		{
-			for (int y = 0; y < rooms_height; ++y)
+			for (unsigned y = 0; y < room_height; ++y)
 			{
 				weight_map[x][y] = std::min(weight_map[x][y], exitBfs[x][y]);
 			}
@@ -279,38 +284,88 @@ void Labyrinth::generateWeightMap()
 	}
 }
 
+// This name is not it Rafo and i dont care to change it
 bool Labyrinth::is_wall(int x, int y) const {
-    return labyrinth[x][y] != TILE_TYPES::EMPTY;
+	return labyrinth[x][y] != TILE_TYPES::EMPTY;
 }
 
 bool Labyrinth::is_wall(std::pair<int, int> pos) const {
-    return labyrinth[pos.first][pos.second] != TILE_TYPES::EMPTY;
+	return labyrinth[pos.first][pos.second] != TILE_TYPES::EMPTY;
+}
+
+bool Labyrinth::is_exit(int x, int y) const {
+	return labyrinth[x][y] == TILE_TYPES::EXIT;
+}
+
+bool Labyrinth::is_exit(std::pair<int, int> pos) const {
+	return labyrinth[pos.first][pos.second] != TILE_TYPES::EXIT;
 }
 
 std::vector<std::vector<int>> Labyrinth::get_weight_map() const {
 	return weight_map;
 }
 
+std::vector<std::pair<int, int>> Labyrinth::get_exits() const {
+	return exits;
+}
+
 int Labyrinth::get_min() {
-	return std::min(rooms_height, rooms_width);
+	// todo:: (refactor) hard coded, can be changed to some height/width calculations
+	// not used currently
+	return 5;
 }
 
 int Labyrinth::get_max() {
-	for(int i = 0; i < rooms_width; ++i) {
-		for(int j = 0; j < rooms_height; ++j) {
-			if(max < weight_map[i][j]) {
-				max = weight_map[i][j];
+	int max_num = weight_map[0][0];
+
+	for (const auto& row : weight_map) {
+		for (int num : row) {
+			if (num > max_num) {
+				max_num = num;
 			}
 		}
 	}
-	return max;
+
+	return max_num;
+}
+
+// First is player, second is bot, third is fire
+std::vector<std::pair<int, int>> Labyrinth::generate_positions() {
+	// distance: vector of coordinates
+	std::unordered_map<int, std::vector<std::pair<int, int>>> count_map;
+
+	// todo:: (refactor) hard coded number
+	int max_num = get_max();
+	int max_calculation_num = max_num - 3;
+
+	for (size_t x = 0; x < room_width; ++x) {
+		for (size_t y = 0; y < room_height; ++y) {
+			count_map[weight_map[x][y]].push_back(std::make_pair(2 * x + 1, 2 * y + 1));
+		}
+	}
+
+	int pair_num = INT_MIN;
+	for (const auto& pair : count_map) {
+		if (pair.second.size() >= 2 && pair.first < max_calculation_num && pair.first > pair_num) {
+			pair_num = pair.first;
+		}
+	}
+
+	std::random_shuffle(count_map[pair_num].begin(), count_map[pair_num].end());
+	std::random_shuffle(count_map[max_num].begin(), count_map[max_num].end());
+
+	return std::vector<std::pair<int, int>>{count_map[pair_num][0], count_map[pair_num][1], count_map[max_num][0]};
 }
 
 void Labyrinth::draw_wm() {
-	for(int j = 0; j < rooms_height; ++j) {
-		for(int i = 0; i < rooms_width; ++i) {
-			std::cout << weight_map[i][j];
+	for (unsigned j = 0; j < room_height; ++j) {
+		for (unsigned i = 0; i < room_width; ++i) {
+			std::cout << weight_map[i][j] << ' ';
 		}
 		std::cout << std::endl;
 	}
+}
+
+std::pair<int,int> Labyrinth::get_labyrinth_size() const {
+	return std::make_pair(vec_width, vec_height);
 }
