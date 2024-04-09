@@ -1,4 +1,3 @@
-#pragma once
 #include "Helpers.h"
 #include <cstdlib>
 #include <iostream>
@@ -83,3 +82,7 @@ void Helpers::hideCursor() {
     set_cursor_position(0, 0);
     std::cout << "\033[?25l";
 };
+
+void Helpers::drop_cursor() {
+    std::cout << "\x1B[" << 30 << ";" << 1 << "f";
+}

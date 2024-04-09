@@ -1,21 +1,15 @@
-#pragma once
 #include <iostream>
 #include <cstdlib>
 
 #include "Human.h"
 #include "Helpers.h"
 
-Human::Human() {     //to avoid code duplication created default constructor, 
-    sprite = '$';
-    Helpers::nonblock(0);        //but error occured(delegation with mem-initialization)
-}
-
-Human::Human(std::pair<int, int> pos) : Player(pos) {
+Human::Human(std::pair<int, int> pos, Labyrinth& labyrinth) : Player(pos, labyrinth) {
     sprite = '$';
     Helpers::nonblock(0);
 }
 
-Human::Human(int x, int y) : Player(std::make_pair(x, y)) {
+Human::Human(int x, int y, Labyrinth& labyrinth) : Player(std::make_pair(x, y), labyrinth) {
     sprite = '$';
     Helpers::nonblock(0);
 }
@@ -24,9 +18,9 @@ Human::~Human() {
     Helpers::nonblock(1);
 }
 
-void Human::move(const Labyrinth& labyrinth) {
+void Human::move() {
     prev_pos = pos;
-
+    labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::EMPTY;
     do {
         key_pressed = Helpers::read_char();
         std::cout << "\r \r";
@@ -84,4 +78,13 @@ void Human::move(const Labyrinth& labyrinth) {
                 break;
         }
     } while (true);
+    labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::HUMAN;
+}
+
+void Human::draw() {
+	if(is_dead) return;
+    clear_pos();
+	labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::HUMAN;
+	Helpers::draw_char_at(pos, sprite);
+    Helpers::drop_cursor();
 }

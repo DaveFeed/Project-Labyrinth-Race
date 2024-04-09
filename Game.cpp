@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <unistd.h>
 
 #include "Game.h"
 #include "Human.h"
@@ -9,50 +10,65 @@
 #include "EasyBot.h"
 #include "MediumBot.h"
 #include "HardBot.h"
+#include "UI.h"
 
 Game::Game() 
-:labyrinth(20,20,2),
-fire(2)
+:labyrinth(10,10,2)
+,fire(labyrinth)
 {
 	srand(time(NULL));
+	fire_amnt = (rand() % 3) + 1;
+	difficulty = DIFFICULTY::Medium;
 
-	difficulty = DIFFICULTY::Rookie;
 	game_state = STATE::Playing;
 }
 
-void Game::start() {
-	Helpers::resizeConsole(80, 60);
-	labyrinth.init();
-	
-	auto positions = labyrinth.generate_positions();
+Game::~Game() {
+	Helpers::nonblock(1);
+	delete player;
+	delete bot;
+}
 
-	player = new Human(positions[0]);
+void Game::start() {
+	Helpers::clear();
+	Helpers::nonblock(0);
+	// difficulty = static_cast<DIFFICULTY>(start_game());
+	// if(difficulty == DIFFICULTY::Exit) {
+	// 	return;
+	// }
+	// Helpers::resizeConsole(80, 60);
+	labyrinth.init();
+	Helpers::clear();
+	labyrinth.draw();
 	
-	// todo:: (add) dynamic difficulty change, at least command args option
+	auto positions = labyrinth.generate_positions(fire_amnt);
+
+	player = new Human(positions[0], labyrinth);
+	
 	switch (difficulty)
 	{
-	case Game::DIFFICULTY::Rookie:
-		bot = new RookieBot(positions[1]);
+	case DIFFICULTY::Rookie:
+		bot = new RookieBot(positions[1], labyrinth);
 		break;
-	case Game::DIFFICULTY::Easy:
-		bot = new EasyBot(positions[1]);
+	case DIFFICULTY::Easy:
+		bot = new EasyBot(positions[1], labyrinth);
 		break;
-	case Game::DIFFICULTY::Medium:
-		// bot = new MediumBot(positions[1]);
+	case DIFFICULTY::Medium:
+		bot = new MediumBot(positions[1], labyrinth);
 		break;
-	case Game::DIFFICULTY::Hard:
-		// bot = new HardBot(positions[1]);
+	case DIFFICULTY::Hard:
+		// bot = new HardBot(positions[1], labyrinth);
 		break;
 	default:
 		break;
 	}
 
-	fire.set_pos(positions[2], labyrinth);
+	for(int i = 0; i < fire_amnt; ++i) {
+		fire.set_pos(positions[i + 2]);
+	}
 
-	labyrinth.draw();
-
-	bot->draw();
 	player->draw();
+	bot->draw();
 	fire.draw();
 
 	loop();
@@ -61,25 +77,38 @@ void Game::start() {
 
 void Game::loop() {
 	while(game_state == STATE::Playing) {
-		Helpers::hideCursor();
-		player->move(labyrinth);
-		bot->move(labyrinth);
+		// Helpers::hideCursor();
+		fire.update();
+		player->move();
+		bot->move();
 
-		fire.update(labyrinth);
-
-		player->clear_pos();
-		player->draw();
-		
 		game_state = check_game_state();
 		if (game_state == STATE::Won) {
-			// draw only the player and then show that he won
+			player->draw();
+			fflush(stdout);
+			//TODO
+			return;
+		}
+		else if(game_state == STATE::Won) {
+			bot->draw();
+			fflush(stdout);
+			// usleep(500000);
+
+			fire.draw();
+			fflush(stdout);
+			//TODO
 			return;
 		}
 
-		bot->clear_pos();
+		player->draw();
+		fflush(stdout);
+		// usleep(500000);
 		bot->draw();
+		fflush(stdout);
+		// usleep(500000);
 
 		fire.draw();
+		fflush(stdout);
 	}
 }
 
@@ -110,9 +139,4 @@ Game::STATE Game::check_game_state() {
 	}
 
 	return STATE::Playing;
-}
-
-Game::~Game() {
-	delete player;
-	delete bot;
 }

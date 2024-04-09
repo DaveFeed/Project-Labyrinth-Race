@@ -2,6 +2,8 @@
 #include <queue>
 #include <cmath>
 #include <unordered_map>
+#include <climits>
+#include <algorithm>
 
 #include "Labyrinth.h"
 #include "Helpers.h"
@@ -330,13 +332,14 @@ int Labyrinth::get_max() {
 }
 
 // First is player, second is bot, third is fire
-std::vector<std::pair<int, int>> Labyrinth::generate_positions() {
+std::vector<std::pair<int, int>> Labyrinth::generate_positions(int fire_amount) {
 	// distance: vector of coordinates
 	std::unordered_map<int, std::vector<std::pair<int, int>>> count_map;
+	std::vector<std::pair<int, int>> res;
 
 	// todo:: (refactor) hard coded number
 	int max_num = get_max();
-	int max_calculation_num = max_num - 3;
+	int max_calculation_num = max_num - 5;
 
 	for (size_t x = 0; x < room_width; ++x) {
 		for (size_t y = 0; y < room_height; ++y) {
@@ -353,8 +356,16 @@ std::vector<std::pair<int, int>> Labyrinth::generate_positions() {
 
 	std::random_shuffle(count_map[pair_num].begin(), count_map[pair_num].end());
 	std::random_shuffle(count_map[max_num].begin(), count_map[max_num].end());
+	std::random_shuffle(count_map[max_num - 1].begin(), count_map[max_num - 1].end());
+	std::random_shuffle(count_map[max_num - 2].begin(), count_map[max_num - 2].end());
+	res.push_back(count_map[pair_num][0]);
+	res.push_back(count_map[pair_num][1]);
+	for(int i = 0; i < fire_amount; ++i) {
+		res.push_back(count_map[max_num - i][0]);
+	}
 
-	return std::vector<std::pair<int, int>>{count_map[pair_num][0], count_map[pair_num][1], count_map[max_num][0]};
+
+	return res; // std::vector<std::pair<int, int>>{count_map[pair_num][0], count_map[pair_num][1], count_map[max_num][0]};
 }
 
 void Labyrinth::draw_wm() {
@@ -368,4 +379,8 @@ void Labyrinth::draw_wm() {
 
 std::pair<int,int> Labyrinth::get_labyrinth_size() const {
 	return std::make_pair(vec_width, vec_height);
+}
+
+std::vector<std::vector<int>>& Labyrinth::get_lab() {
+	return labyrinth;
 }

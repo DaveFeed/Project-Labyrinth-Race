@@ -4,18 +4,18 @@
 class Player
 {
 public:
-    Player();
-    Player(std::pair<int, int> pos);
-    Player(int x, int y);
+    Player(std::pair<int, int> pos, Labyrinth& labyrinth);
+    Player(int x, int y, Labyrinth& labyrinth);
 
-    virtual void move(const Labyrinth& labyrinth) = 0;
-    virtual void draw();
+    virtual void move() = 0;
+    virtual void draw() = 0;
     std::pair<int, int> get_pos();
     void clear_pos();
 
     void kill();
 
 protected:
+    Labyrinth& labyrinth;
     std::pair<int, int> pos;
     std::pair<int, int> prev_pos;
     char sprite = 0;

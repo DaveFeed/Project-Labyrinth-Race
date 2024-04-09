@@ -1,5 +1,11 @@
-output: Labyrinth.o Player.o Human.o RookieBot.o Fire.o Game.o UI.o Project\ Labyrinth\ Race.o
-	g++ Labyrinth.o Player.o Human.o RookieBot.o Fire.o Game.o UI.o Project\ Labyrinth\ Race.o -o output
+output: Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o Game.o Project\ Labyrinth\ Race.o
+	g++ Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o Game.o Project\ Labyrinth\ Race.o -o output
+
+Helpers.o: Helpers.cpp Helpers.h
+	g++ -c Helpers.cpp
+
+UI.o: UI.cpp UI.h
+	g++ -c UI.cpp
 
 Labyrinth.o: Labyrinth.cpp Labyrinth.h
 	g++ -c Labyrinth.cpp
@@ -16,11 +22,14 @@ Project\ Labyrinth\ Race.o: Project\ Labyrinth\ Race.cpp
 RookieBot.o: RookieBot.cpp RookieBot.h
 	g++ -c RookieBot.cpp
 
+EasyBot.o: EasyBot.cpp EasyBot.h
+	g++ -c EasyBot.cpp
+
+MediumBot.o: MediumBot.cpp MediumBot.h
+	g++ -c MediumBot.cpp
+
 Game.o: Game.cpp Game.h
 	g++ -c Game.cpp
-
-UI.o: UI.cpp UI.h
-	g++ -c UI.cpp
 
 Fire.o: Fire.cpp Fire.h
 	g++ -c fire.cpp

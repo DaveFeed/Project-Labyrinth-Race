@@ -4,14 +4,14 @@
 #include "RookieBot.h"
 #include "Helpers.h"
 
-RookieBot::RookieBot() { sprite = 'R'; };
-RookieBot::RookieBot(std::pair<int, int> pos) : Player(pos) { sprite = 'R'; };
-RookieBot::RookieBot(int x, int y) : Player(x, y) { sprite = 'R'; };
+RookieBot::RookieBot(std::pair<int, int> pos, Labyrinth& labyrinth) : Player(pos, labyrinth){ sprite = 'R'; };
+RookieBot::RookieBot(int x, int y, Labyrinth& labyrinth) : Player(x, y, labyrinth){ sprite = 'R'; };
 
-void RookieBot::move(const Labyrinth& labyrinth) {
+void RookieBot::move() {
 	prev_pos = pos;
 	if (is_dead) return;
-	
+	labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::EMPTY;
+
 	do {
 		direction = rand() % 4;
 		switch (direction) {
@@ -61,4 +61,13 @@ void RookieBot::move(const Labyrinth& labyrinth) {
 			break;
 		}
 	} while (true);
+	labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::BOT;
+}
+
+void RookieBot::draw() {
+	if(is_dead) return;
+	clear_pos();
+	labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::BOT;
+	Helpers::draw_char_at(pos, sprite);
+    Helpers::drop_cursor();
 }

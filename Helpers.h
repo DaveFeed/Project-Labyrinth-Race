@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-static class Helpers
+class Helpers
 {
 public:
 	static void clear();
@@ -12,6 +12,7 @@ public:
 
 	static void set_cursor_position(int x, int y);
 	static void set_cursor_position(std::pair<int, int> p);
+	static void drop_cursor();
 
 	static void draw_char_at(int x, int y, char c);
 	static void draw_char_at(std::pair<int, int> p, char c);

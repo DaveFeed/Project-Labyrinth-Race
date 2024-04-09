@@ -4,11 +4,11 @@
 class RookieBot: public Player
 {
 public:
-    RookieBot();
-    RookieBot(std::pair<int, int> pos);
-    RookieBot(int x, int y);
+    RookieBot(std::pair<int, int> pos, Labyrinth& labyrinth);
+    RookieBot(int x, int y, Labyrinth& labyrinth);
 
-    void move(const Labyrinth& labyrinth) override;
+    void move() override;
+    void draw() override;
 
 private:
     enum DIRS {

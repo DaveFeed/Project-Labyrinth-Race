@@ -4,12 +4,12 @@
 class Human: public Player
 {
 public:
-    Human();
-    Human(std::pair<int, int> pos);
-    Human(int x, int y);
+    Human(std::pair<int, int> pos, Labyrinth& labyrinth);
+    Human(int x, int y, Labyrinth& labyrinth);
     ~Human();
 
-    void move(const Labyrinth& labyrinth) override;
+    void move() override;
+    void draw() override;
 
 private:
     enum KEYS {

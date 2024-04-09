@@ -1,18 +1,12 @@
 #include "Player.h"
 #include "Helpers.h"
 
-Player::Player(){}
+Player::Player(std::pair<int, int> pos, Labyrinth& labyrinth): pos(pos), labyrinth(labyrinth) {}
 
-Player::Player(std::pair<int, int> pos): pos(pos) {}
-
-Player::Player(int x, int y): pos(std::make_pair(x, y)) {}
+Player::Player(int x, int y, Labyrinth& labyrinth): pos(std::make_pair(x, y)), labyrinth(labyrinth) {}
 
 void Player::clear_pos() {
     Helpers::draw_char_at(prev_pos, ' ');
-}
-
-void Player::draw() {
-	Helpers::draw_char_at(pos, sprite);
 }
 
 std::pair<int, int> Player::get_pos() {

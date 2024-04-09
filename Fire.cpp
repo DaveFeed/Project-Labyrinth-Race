@@ -1,10 +1,9 @@
 #include "Fire.h"
 #include "Helpers.h"
 
-Fire::Fire() {}
-Fire::Fire(int amount): amount(amount) {}
+Fire::Fire(Labyrinth& labyrinth): labyrinth(labyrinth) {}
 
-void Fire::update(const Labyrinth& labyrinth) {
+void Fire::update() {
     std::vector<std::pair<int, int>> to_add;
     for (auto it : fire_pos) {
         int x = it.first;
@@ -23,6 +22,7 @@ void Fire::update(const Labyrinth& labyrinth) {
         }
     }
     for (auto pair : to_add) {
+        labyrinth.get_lab()[pair.first][pair.second] = TILE_TYPES::FIRE;
         fire_pos.insert(pair);
     }
 }
@@ -31,13 +31,12 @@ void Fire::draw() {
 	for (auto pair : fire_pos) {
 		Helpers::draw_char_at(pair, sprite);
 	}
+    Helpers::drop_cursor();
 }
 
-void Fire::set_pos(std::pair<int, int> pos, const Labyrinth& labyrinth) {
+void Fire::set_pos(std::pair<int, int> pos) {
 	fire_pos.insert(pos);
-    for (int i = 1; i < amount; ++i) {
-        update(labyrinth);
-    }
+    labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::FIRE;
 }
 
 std::set<std::pair<int, int>> Fire::get_fire_pos() const {

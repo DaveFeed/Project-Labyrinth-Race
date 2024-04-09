@@ -13,11 +13,12 @@ public:
 	void loop();
 
 private:
-	enum class DIFFICULTY {
-		Rookie,
-		Easy,
-		Medium,
-		Hard
+	enum DIFFICULTY {
+		Exit = 0,
+		Rookie = 1,
+		Easy = 2,
+		Medium = 3,
+		Hard = 4
 	};
 
 	enum class STATE {
@@ -33,6 +34,7 @@ private:
 	Player* player = nullptr;
 	Player* bot = nullptr;
 	Fire fire;
+	int fire_amnt;
 
 	STATE check_game_state();
 };

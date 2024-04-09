@@ -5,11 +5,11 @@ class EasyBot :
     public Player
 {
 public:
-    EasyBot();
-    EasyBot(std::pair<int, int> pos);
-    EasyBot(int x, int y);
+    EasyBot(std::pair<int, int> pos, Labyrinth& labyrinth);
+    EasyBot(int x, int y, Labyrinth& labyrinth);
 
-    void move(const Labyrinth& labyrinth) override;
+    void move() override;
+    void draw() override;
 
 private:
     enum DIRS {
