@@ -18,7 +18,7 @@ Game::Game()
 {
 	srand(time(NULL));
 	fire_amnt = (rand() % 3) + 1;
-	difficulty = DIFFICULTY::Medium;
+	difficulty = DIFFICULTY::Hard;
 
 	game_state = STATE::Playing;
 }
@@ -32,10 +32,10 @@ Game::~Game() {
 void Game::start() {
 	Helpers::clear();
 	Helpers::nonblock(0);
-	// difficulty = static_cast<DIFFICULTY>(start_game());
-	// if(difficulty == DIFFICULTY::Exit) {
-	// 	return;
-	// }
+	difficulty = static_cast<DIFFICULTY>(start_game());
+	if(difficulty == DIFFICULTY::Exit) {
+		return;
+	}
 	// Helpers::resizeConsole(80, 60);
 	labyrinth.init();
 	Helpers::clear();
@@ -57,7 +57,7 @@ void Game::start() {
 		bot = new MediumBot(positions[1], labyrinth);
 		break;
 	case DIFFICULTY::Hard:
-		// bot = new HardBot(positions[1], labyrinth);
+		bot = new HardBot(positions[1], labyrinth);
 		break;
 	default:
 		break;
@@ -86,26 +86,39 @@ void Game::loop() {
 		if (game_state == STATE::Won) {
 			player->draw();
 			fflush(stdout);
-			//TODO
+			for(int y = 0; y < labyrinth.get_labyrinth_size().second; ++y) {
+				delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 25000);
+			}
+			you_win();
+			Helpers::read_char();
+			Helpers::clear();
 			return;
 		}
-		else if(game_state == STATE::Won) {
+		else if(game_state == STATE::Lost) {
+			player->draw();
+			fflush(stdout);
+			usleep(500000);
 			bot->draw();
 			fflush(stdout);
-			// usleep(500000);
+			usleep(500000);
 
 			fire.draw();
 			fflush(stdout);
-			//TODO
+			for(int y = 0; y < labyrinth.get_labyrinth_size().second; ++y) {
+				delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 25000);
+			}
+			you_lose();
+			Helpers::read_char();
+			Helpers::clear();
 			return;
 		}
 
 		player->draw();
 		fflush(stdout);
-		// usleep(500000);
+		usleep(500000);
 		bot->draw();
 		fflush(stdout);
-		// usleep(500000);
+		usleep(500000);
 
 		fire.draw();
 		fflush(stdout);

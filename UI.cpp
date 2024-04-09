@@ -10,7 +10,7 @@ static void type_text(std::string str, unsigned int ml_seconds = 100000) {
     }
 }
 
-static void delete_text(int x, int y, unsigned int ml_seconds = 50000) {
+void delete_text(int x, int y, unsigned int ml_seconds) {
     Helpers::set_cursor_position(x-1, y-1);
     for(int i = 0; i < x; ++i) {
         std::cout << "\b \b";
@@ -94,4 +94,28 @@ int start_game() {
     else {
         return 0;
     }
+}
+
+void you_win() {
+    std::string congr = "Congratulations!\n";
+    std::string win =  "You win!\n";
+    std::string press =  "Press any key to exit\n";
+
+    type_text(congr);
+    sleep(2);
+    type_text(win);
+    sleep(2);
+    type_text(press);
+}
+
+void you_lose() {
+    std::string lost = "You lose\n";
+    std::string luck =  "Better luck next time!\n";
+    std::string press =  "Press any key to exit\n";
+
+    type_text(lost);
+    sleep(2);
+    type_text(luck);
+    sleep(2);
+    type_text(press);
 }
