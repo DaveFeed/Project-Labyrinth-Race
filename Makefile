@@ -1,5 +1,5 @@
-output: Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o Game.o Project\ Labyrinth\ Race.o
-	g++ Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o Game.o Project\ Labyrinth\ Race.o -o output
+output: Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o HardBot.o Game.o Project\ Labyrinth\ Race.o
+	g++ Helpers.o UI.o Labyrinth.o Player.o Human.o RookieBot.o Fire.o EasyBot.o MediumBot.o HardBot.o Game.o Project\ Labyrinth\ Race.o -o output
 
 Helpers.o: Helpers.cpp Helpers.h
 	g++ -c Helpers.cpp
@@ -27,6 +27,9 @@ EasyBot.o: EasyBot.cpp EasyBot.h
 
 MediumBot.o: MediumBot.cpp MediumBot.h
 	g++ -c MediumBot.cpp
+
+HardBot.o: HardBot.cpp HardBot.h
+	g++ -c HardBot.cpp
 
 Game.o: Game.cpp Game.h
 	g++ -c Game.cpp
