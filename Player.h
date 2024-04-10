@@ -11,6 +11,7 @@ public:
     virtual void draw() = 0;
     std::pair<int, int> get_pos();
     void clear_pos();
+    bool dead();
 
     void kill();
 

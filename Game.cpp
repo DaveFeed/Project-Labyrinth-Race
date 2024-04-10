@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <unistd.h>
 
 #include "Game.h"
 #include "Human.h"
@@ -18,7 +17,6 @@ Game::Game()
 {
 	srand(time(NULL));
 	fire_amnt = (rand() % 3) + 1;
-	difficulty = DIFFICULTY::Hard;
 
 	game_state = STATE::Playing;
 }
@@ -30,15 +28,18 @@ Game::~Game() {
 }
 
 void Game::start() {
+	Helpers::hideCursor();
 	Helpers::clear();
 	Helpers::nonblock(0);
-	difficulty = static_cast<DIFFICULTY>(start_game());
+	difficulty = static_cast<DIFFICULTY>(UI::start_game());
 	if(difficulty == DIFFICULTY::Exit) {
 		return;
 	}
-	// Helpers::resizeConsole(80, 60);
+	#ifdef _WIN32
+	Helpers::resizeConsole(80, 60);
+	#endif
 	labyrinth.init();
-	Helpers::clear();
+	// Helpers::clear();
 	labyrinth.draw();
 	
 	auto positions = labyrinth.generate_positions(fire_amnt);
@@ -77,7 +78,6 @@ void Game::start() {
 
 void Game::loop() {
 	while(game_state == STATE::Playing) {
-		// Helpers::hideCursor();
 		fire.update();
 		player->move();
 		bot->move();
@@ -87,9 +87,10 @@ void Game::loop() {
 			player->draw();
 			fflush(stdout);
 			for(int y = 0; y < labyrinth.get_labyrinth_size().second; ++y) {
-				delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 25000);
+				UI::delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 10000);
 			}
-			you_win();
+			UI::sleep_ml(1000000);
+			UI::you_win();
 			Helpers::read_char();
 			Helpers::clear();
 			return;
@@ -97,17 +98,18 @@ void Game::loop() {
 		else if(game_state == STATE::Lost) {
 			player->draw();
 			fflush(stdout);
-			usleep(500000);
+			UI::sleep_ml(300000);
 			bot->draw();
 			fflush(stdout);
-			usleep(500000);
+			UI::sleep_ml(300000);
 
 			fire.draw();
 			fflush(stdout);
 			for(int y = 0; y < labyrinth.get_labyrinth_size().second; ++y) {
-				delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 25000);
+				UI::delete_text(labyrinth.get_labyrinth_size().first + 1, labyrinth.get_labyrinth_size().second - y, 10000);
 			}
-			you_lose();
+			UI::sleep_ml(1000000);
+			UI::you_lose();
 			Helpers::read_char();
 			Helpers::clear();
 			return;
@@ -115,10 +117,12 @@ void Game::loop() {
 
 		player->draw();
 		fflush(stdout);
-		usleep(500000);
+		UI::sleep_ml(300000);
 		bot->draw();
 		fflush(stdout);
-		usleep(500000);
+		if(!bot->dead()) {
+			UI::sleep_ml(300000);
+		}
 
 		fire.draw();
 		fflush(stdout);

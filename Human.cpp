@@ -73,6 +73,7 @@ void Human::move() {
                 }
                 break;
             case KEYS::q:
+                Helpers::clear();
                 exit(0);
             default:
                 break;

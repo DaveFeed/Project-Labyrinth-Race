@@ -16,3 +16,7 @@ std::pair<int, int> Player::get_pos() {
 void Player::kill() {
     is_dead = true;
 }
+
+bool Player::dead() {
+    return is_dead;
+}

@@ -17,53 +17,53 @@ void RookieBot::move() {
 		direction = rand() % 4;
 		switch (direction) {
 		case UP:
-			if (!labyrinth.is_wall(pos.first, pos.second - 1) && pos.second > 1) {
-				pos.second -= 2;
-				moved = true;
-				break;
-			}
-
 			if (labyrinth.is_exit(pos.first, pos.second - 1)) {
 				pos.second -= 1;
 				moved = true;
 				break;
 			}
-			break;
-		case LEFT:
-			if (!labyrinth.is_wall(pos.first - 1, pos.second) && pos.first > 1) {
-				pos.first -= 2;
+
+			if (!labyrinth.is_wall(pos.first, pos.second - 1) && pos.second > 1) {
+				pos.second -= 2;
 				moved = true;
 				break;
 			}
-
+			break;
+		case LEFT:
 			if (labyrinth.is_exit(pos.first - 1, pos.second)) {
 				pos.first -= 1;
 				moved = true;
 				break;
 			}
+
+			if (!labyrinth.is_wall(pos.first - 1, pos.second) && pos.first > 1) {
+				pos.first -= 2;
+				moved = true;
+				break;
+			}
 			break;
 		case DOWN:
+			if (labyrinth.is_exit(pos.first, pos.second + 1)) {
+				pos.second += 1;
+				moved = true;
+				break;
+			}
+
 			if (!labyrinth.is_wall(pos.first, pos.second + 1) && pos.second < labyrinth.get_labyrinth_size().second - 2) {
 				pos.second += 2;
 				moved = true;
 				break;
 			}
-
-			if (labyrinth.is_exit(pos.first, pos.second + 1)) {
-				pos.second += 1;
-				moved = true;
-				break;
-			}
 			break;
 		case RIGHT:
-			if (!labyrinth.is_wall(pos.first + 1, pos.second) && pos.first < labyrinth.get_labyrinth_size().first - 2) {
-				pos.first += 2;
+			if (labyrinth.is_exit(pos.first, pos.second + 1)) {
+				pos.second += 1;
 				moved = true;
 				break;
 			}
 
-			if (labyrinth.is_exit(pos.first, pos.second + 1)) {
-				pos.second += 1;
+			if (!labyrinth.is_wall(pos.first + 1, pos.second) && pos.first < labyrinth.get_labyrinth_size().first - 2) {
+				pos.first += 2;
 				moved = true;
 				break;
 			}
@@ -74,7 +74,12 @@ void RookieBot::move() {
 }
 
 void RookieBot::draw() {
-	if(is_dead) return;
+	if(is_dead)  {
+		if(labyrinth.get_lab()[pos.first][pos.first] != TILE_TYPES::FIRE)
+		prev_pos = pos;
+		clear_pos();
+		return;
+	}
 	clear_pos();
 	labyrinth.get_lab()[pos.first][pos.second] = TILE_TYPES::BOT;
 	Helpers::draw_char_at(pos, sprite);

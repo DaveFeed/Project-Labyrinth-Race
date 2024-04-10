@@ -104,6 +104,7 @@ void Labyrinth::init()
 
 void Labyrinth::draw()
 {
+	Helpers::set_cursor_position(-1, -1);
 	for (int y = 0; y < vec_height; ++y) {
 		for (int x = 0; x < vec_width; ++x) {
 			switch (labyrinth[x][y])
@@ -365,7 +366,7 @@ std::vector<std::pair<int, int>> Labyrinth::generate_positions(int fire_amount) 
 	}
 
 
-	return res; // std::vector<std::pair<int, int>>{count_map[pair_num][0], count_map[pair_num][1], count_map[max_num][0]};
+	return res;
 }
 
 void Labyrinth::draw_wm() {

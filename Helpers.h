@@ -2,6 +2,9 @@
 #include <vector>
 #include <string>
 
+#ifdef _WIN32
+static 
+#endif 
 class Helpers
 {
 public:
