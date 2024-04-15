@@ -35,7 +35,7 @@ Game.o: Game.cpp Game.h
 	g++ -c Game.cpp
 
 Fire.o: Fire.cpp Fire.h
-	g++ -c fire.cpp
+	g++ -c Fire.cpp
 
 clean:
 	rm output *.o
