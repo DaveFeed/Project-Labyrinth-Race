@@ -134,11 +134,16 @@ Game::STATE Game::check_game_state() {
 		if (player_location == exit) {
 			return STATE::Won;
 		}
+	}
 
+
+for (const auto& exit : labyrinth.get_exits())
+	{
 		if (bot_location == exit) {
 			return STATE::Lost;
 		}
 	}
+
 
 	for (const auto& f : fire.get_fire_pos())
 	{
